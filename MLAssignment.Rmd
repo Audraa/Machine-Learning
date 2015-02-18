@@ -13,41 +13,91 @@ Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible t
 
 #Data Analysis
 
-```{r library }
+```{r library , echo=FALSE, }
 require(caret)
 require(ggplot2)
-require(randomforext)
-require(stargazer)
-#install.packages("stargazer")
-#library(stargazer)
+require(randomforest)
+require(plyr)
+require(stringr)
+require(knitr)
+library(caret)
+
+
 ```
 
 
-```{r load data, cache=TRUE}
+```{r load data, cache=TRUE ,echo=FALSE}
 
 #The training data for this project are available here: 
 
 trainingURL<-"http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
 testURL<-"http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
-training<-read.csv(trainingURL,na.strings=c("NA",""))
+train<-read.csv(trainingURL,na.strings=c("NA",""))
 test<-read.csv(testURL,na.strings=c("NA",""))
 
-?read.csv
-#Clean data
-clean_train<-apply(!is.na(training),2,sum)==19622
-training2<-training[,clean_train]
-testing2<-test[,clean_train]
 
-test<-test[,clean_train]
-stargazer(test[1:4],summary=FALSE)
+#Clean data
+#clean_train<-apply(!is.na(training),2,sum)==19622
+
+
+training2<-data.frame(train$user_name,train$classe,train[,grep("accel_",names(train))])
+
+#Remove all var variables as it is a derived column with mostly NA's
+training2<-training2[,-(grep("var_",names(training2)))]
+
+
+#The classe does not exist in the test data set.Do the same filtering for the  test data
+testing2<-data.frame(test$user_name,test[,grep("accel_",names(test))])
+testing2<-testing2[,-(grep("var_",names(testing2)))]
+
+names(training2)
+names(training2)[1] <-"user_name"
+names(training2)[2] <-"classe"
+#knitr::kable(head(training2), booktabs = TRUE ,caption = "Summary Data")
+knitr::kable(head(training2[1:9]), booktabs = TRUE ,caption = "Summary Data")
+knitr::kable(head(training2[9:16]), booktabs = TRUE )
+knitr::kable(head(training2[17:18]), booktabs = TRUE )
 
 
 
 ```
 
-You can also embed plots, for example:
 
-```{r, echo=FALSE}
+```{r summary, echo=FALSE}
+
+#knitr::kable(summary(training2))
+
+qplot(factor(user_name), data=train,colour=classe)
+
+```
+
+```{r model, echo=FALSE}
+
+
+training <-training2
+
+
+training$classe <-factor(training$classe)
+
+inTrain <- createDataPartition(training$classe,p=.75, list=FALSE)
+
+
+training <- training[inTrain,]
+testing <- training[-inTrain,]
+dim(training)
+dim(testing)
+
+
+
+set.seed(33833)
+rfFit<- train(classe~., method="rf",data=training)
+
+rfpre <- predict(rfFit,testing)
+
+varImp(rfFit)
+
+
+
 
 ```
 

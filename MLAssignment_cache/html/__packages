@@ -3,3 +3,10 @@ lattice
 ggplot2
 caret
 stargazer
+survival
+Formula
+Hmisc
+tables
+knitr
+stringr
+plyr
