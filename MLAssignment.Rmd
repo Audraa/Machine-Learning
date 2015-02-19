@@ -21,7 +21,7 @@ require(plyr)
 require(stringr)
 require(knitr)
 library(caret)
-
+library(rattle)
 
 ```
 
@@ -53,10 +53,45 @@ testing2<-testing2[,-(grep("var_",names(testing2)))]
 names(training2)
 names(training2)[1] <-"user_name"
 names(training2)[2] <-"classe"
+training2$classe <-factor(training2$classe)
+
+```
+
+In the analysis the variables were ploted against thier indexes and we can see that the classe is a good classifier for each of the variables. We investigate further to see if  all the variables are required for the prediction.
+
+```{r plots, echo=FALSE}
 #knitr::kable(head(training2), booktabs = TRUE ,caption = "Summary Data")
-knitr::kable(head(training2[1:9]), booktabs = TRUE ,caption = "Summary Data")
-knitr::kable(head(training2[9:16]), booktabs = TRUE )
-knitr::kable(head(training2[17:18]), booktabs = TRUE )
+knitr::kable(head(training2[1:6]), booktabs = TRUE ,caption = "Summary Data")
+knitr::kable(head(training2[7:12]), booktabs = TRUE )
+knitr::kable(head(training2[13:18]), booktabs = TRUE )
+###
+
+par(mfrow=c(2,2))
+plot(training2$accel_belt_x,col=training2$classe)
+plot(training2$accel_belt_y,col=training2$classe)
+plot(training2$accel_belt_z,col=training2$classe)
+
+plot(training2$accel_arm_x,col=training2$classe)
+plot(training2$accel_arm_y,col=training2$classe)
+plot(training2$accel_arm_z,col=training2$classe)
+
+plot(training2$accel_forearm_x,col=training2$classe)
+plot(training2$accel_forearm_y,col=training2$classe)
+plot(training2$accel_forearm_z,col=training2$classe)
+
+plot(training2$total_accel_forearm,col=training2$classe)
+training <-training2
+
+-289 +111-12
+
+
+inTrain <- createDataPartition(training$classe,p=.75, list=FALSE)
+
+
+training <- training2[inTrain,]
+testing <- training2[-inTrain,]
+
+
 
 
 
@@ -71,31 +106,30 @@ qplot(factor(user_name), data=train,colour=classe)
 
 ```
 
+#Model
+
 ```{r model, echo=FALSE}
 
 
-training <-training2
 
+rfFit<- train(classe~., method="rpart",data=training)
 
-training$classe <-factor(training$classe)
-
-inTrain <- createDataPartition(training$classe,p=.75, list=FALSE)
-
-
-training <- training[inTrain,]
-testing <- training[-inTrain,]
-dim(training)
-dim(testing)
-
-
-
-set.seed(33833)
-rfFit<- train(classe~., method="rf",data=training)
-
+print(rfFit)
+fancyRpartPlot(rfFit$finalModel)
+#knitr::kable(print(rfFit$finalModel))
 rfpre <- predict(rfFit,testing)
 
-varImp(rfFit)
+confusionMatrix(rfpre,testing$classe)
+rfFit<-train(classe~.,data=training,method="rf",
+                trControl=trainControl(method="cv",number=7),
+                prox=TRUE,allowParallel=TRUE)
 
+print(rfFit)
+fancyRpartPlot(rfFit$finalModel)
+#knitr::kable(print(rfFit$finalModel))
+rfpre <- predict(rfFit,testing)
+
+confusionMatrix(rfpre,testing$classe)
 
 
 
