@@ -11,3 +11,4 @@ knitr
 stringr
 plyr
 rattle
+randomForest

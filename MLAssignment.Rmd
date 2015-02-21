@@ -7,26 +7,33 @@ output: html_document
 
 #Summary
 
-Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset). 
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, the goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset). 
+
+
 
 
 
 #Data Analysis
 
-```{r library , echo=FALSE, }
+There are several variables including some derived variables in the dataset. We are interested in the accelerometer variables. These were easily idetified by  the string "accel_" present in the variable name. Some of the accelerometer variables had mostly null values, these were identified as those with "var_" in the variable name. These were removed. The remaining two variable required for the model were the user_name and classe. These were constructed into a dataframe and this new data frame is what was used for creating a model. The new dataset contained 18 new variables.. The classse name was changed to class. The same treatment was given the test data set of 20 observations
+
+
+
+```{r library , echo=FALSE, message=FALSE }
 require(caret)
 require(ggplot2)
-require(randomforest)
+
 require(plyr)
 require(stringr)
 require(knitr)
+require(Hmisc)
 library(caret)
 library(rattle)
 
 ```
 
 
-```{r load data, cache=TRUE ,echo=FALSE}
+```{r load data, cache=TRUE ,echo=FALSE,message=FALSE}
 
 #The training data for this project are available here: 
 
@@ -50,16 +57,19 @@ training2<-training2[,-(grep("var_",names(training2)))]
 testing2<-data.frame(test$user_name,test[,grep("accel_",names(test))])
 testing2<-testing2[,-(grep("var_",names(testing2)))]
 
-names(training2)
 names(training2)[1] <-"user_name"
-names(training2)[2] <-"classe"
-training2$classe <-factor(training2$classe)
+names(testing2)[1] <-"user_name"
+names(training2)[2] <-"class"
+training2$class <-factor(training2$class)
 
 ```
 
-In the analysis the variables were ploted against thier indexes and we can see that the classe is a good classifier for each of the variables. We investigate further to see if  all the variables are required for the prediction.
+In the analysis the variables were ploted against thier indexes and we can see that the class variable is a good classifier for each of the variables. We investigate further to see if  all the variables are required for the prediction.
 
-```{r plots, echo=FALSE}
+Given a set of data the model will be able to predict how well a person is doing a give exercise. 
+
+
+```{r plots, echo=FALSE,message=FALSE}
 #knitr::kable(head(training2), booktabs = TRUE ,caption = "Summary Data")
 knitr::kable(head(training2[1:6]), booktabs = TRUE ,caption = "Summary Data")
 knitr::kable(head(training2[7:12]), booktabs = TRUE )
@@ -67,72 +77,89 @@ knitr::kable(head(training2[13:18]), booktabs = TRUE )
 ###
 
 par(mfrow=c(2,2))
-plot(training2$accel_belt_x,col=training2$classe)
-plot(training2$accel_belt_y,col=training2$classe)
-plot(training2$accel_belt_z,col=training2$classe)
+plot(training2$accel_belt_x,col=training2$class,main="accel_belt_x")
 
-plot(training2$accel_arm_x,col=training2$classe)
-plot(training2$accel_arm_y,col=training2$classe)
-plot(training2$accel_arm_z,col=training2$classe)
-
-plot(training2$accel_forearm_x,col=training2$classe)
-plot(training2$accel_forearm_y,col=training2$classe)
-plot(training2$accel_forearm_z,col=training2$classe)
-
-plot(training2$total_accel_forearm,col=training2$classe)
-training <-training2
-
--289 +111-12
-
-
-inTrain <- createDataPartition(training$classe,p=.75, list=FALSE)
-
-
-training <- training2[inTrain,]
-testing <- training2[-inTrain,]
-
-
-
+plot(training2$accel_arm_x,col=training2$class,main="accel_arm_x")
+plot(training2$accel_forearm_x,col=training2$class ,main="accel_forearm_x")
+plot(training2$total_accel_forearm,col=training2$class,main="Totalaccel_forearm_x")
 
 
 ```
 
+The data was partitioned into training(30%) and testing (70%).This ratio was used as the process took too long to complete. Normaally this would be 60% \40 % ratio. The train method in the caret package. We predict using random forest (rf).
 
-```{r summary, echo=FALSE}
+The seed was set to 32343 to make the result reproducible.
+```{r summary, echo=FALSE,message=FALSE}
+training <-training2
 
-#knitr::kable(summary(training2))
+inTrain <- createDataPartition(training$class,p=.3, list=FALSE)
+training <- training2[inTrain,]
+testing <- training2[-inTrain,]
 
-qplot(factor(user_name), data=train,colour=classe)
-
+qplot(factor(user_name), data=training,colour=class, main="Repitions of users by their class")
+?qplot
 ```
 
 #Model
 
-```{r model, echo=FALSE}
+```{r model, echo=FALSE,message=FALSE, cache=TRUE}
 
 
+set.seed(32343)
 
-rfFit<- train(classe~., method="rpart",data=training)
-
-print(rfFit)
-fancyRpartPlot(rfFit$finalModel)
-#knitr::kable(print(rfFit$finalModel))
-rfpre <- predict(rfFit,testing)
-
-confusionMatrix(rfpre,testing$classe)
-rfFit<-train(classe~.,data=training,method="rf",
-                trControl=trainControl(method="cv",number=7),
-                prox=TRUE,allowParallel=TRUE)
-
-print(rfFit)
-fancyRpartPlot(rfFit$finalModel)
-#knitr::kable(print(rfFit$finalModel))
-rfpre <- predict(rfFit,testing)
-
-confusionMatrix(rfpre,testing$classe)
-
+rfFit2<- train(class~., method="rf",data=training,allowParallel=TRUE)
 
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+###Results
+
+```{r results, echo=FALSE,message=FALSE, cache=TRUE}
+rfFit2
+
+```
+
+###Final Model
+
+```{r finalmodel, echo=FALSE,message=FALSE, cache=TRUE}
+
+
+print(rfFit2$finalModel)
+
+#￼getTree( rfFit2$finalModel,k=2)
+rfpre2<- predict(rfFit2,testing)
+```
+
+###Confusion Matrix
+
+```{r confusionmatrix, echo=FALSE,message=FALSE, cache=TRUE}
+confusionMatrix(rfpre2,testing$class)
+
+
+```
+
+
+#Test Dataset Prediction
+
+
+```{r predictTest, echo=FALSE,message=FALSE, cache=TRUE}
+
+rfpretest<- predict(rfFit2,testing2)
+t<-data.frame(rfpretest,testing2)
+
+ knitr::kable(head(t[1:10]), booktabs = TRUE ,caption = "Test Data Summary")
+knitr::kable(head(t[11:18]), booktabs = TRUE )
+rfpretest
+
+
+```
+
+#Conclusion
+
+The final model gives a 90.9% Accuracy with a confidence interval of 90% - 91%. The Accuracy lies between this interval. The model predicts that the exercise is being done well (class = A) with a sensitivity of 94.7% and specificity of 95.9%. Again for class A prediction both the positive and negetive prediction are high. The model sensitivity and specificity for the other class are relatively smaller. The error rate for A is 0.07795699.
+
+Further analysis can be carried out with different multiple classification model and compared to see if a better model can be found. 
+
+
+
+
