@@ -31,19 +31,7 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>&lt;!DOCTYPE html&gt;</p>
-
-<p></p>
-
-<p></p>
-
-<p>
-
-</p>
-
-<p></p>
-
-<p></p>
+        <p></p>
 
 <p></p>Machine Learning Course Project
 
@@ -104,199 +92,13 @@ code{white-space: pre;}
 <div id="data-analysis">
 <h1>
 <a id="data-analysis" class="anchor" href="#data-analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Analysis</h1>
-<p>There are several variables including some derived variables in the dataset. We are interested in the accelerometer variables. These were easily idetified by the string “accel_” present in the variable name. Some of the accelerometer variables had mostly null values, these were identified as those with “var_” in the variable name. These were removed. The remaining two variable required for the model were the user_name and classe. These were constructed into a dataframe and this new data frame is what was used for creating a model. The new dataset contained 18 new variables.. The classse name was changed to class. The same treatment was given the test data set of 20 observations</p>
+<p>There are several variables including some derived variables in the dataset. The columns that had a lot of null values were removed from the dataset. The same column was then applied to the test data set.</p>
+<p>The training data was split into training and test with a ratio of 60% for training and 40% for testing and cross validation.</p>
+<p>Results were then reviewed and analysed. Predictions was then made using the original test dataset with 20 observations.</p>
 <p>In the analysis the variables were ploted against thier indexes and we can see that the class variable is a good classifier for each of the variables. We investigate further to see if all the variables are required for the prediction.</p>
 <p>Given a set of data the model will be able to predict how well a person is doing a give exercise.</p>
-<table>
-Summary Data
-<thead>
-<tr>
-<th align="left">user_name</th>
-<th align="left">class</th>
-<th align="right">total_accel_belt</th>
-<th align="right">accel_belt_x</th>
-<th align="right">accel_belt_y</th>
-<th align="right">accel_belt_z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">carlitos</td>
-<td align="left">A</td>
-<td align="right">3</td>
-<td align="right">-21</td>
-<td align="right">4</td>
-<td align="right">22</td>
-</tr>
-<tr>
-<td align="left">carlitos</td>
-<td align="left">A</td>
-<td align="right">3</td>
-<td align="right">-22</td>
-<td align="right">4</td>
-<td align="right">22</td>
-</tr>
-<tr>
-<td align="left">carlitos</td>
-<td align="left">A</td>
-<td align="right">3</td>
-<td align="right">-20</td>
-<td align="right">5</td>
-<td align="right">23</td>
-</tr>
-<tr>
-<td align="left">carlitos</td>
-<td align="left">A</td>
-<td align="right">3</td>
-<td align="right">-22</td>
-<td align="right">3</td>
-<td align="right">21</td>
-</tr>
-<tr>
-<td align="left">carlitos</td>
-<td align="left">A</td>
-<td align="right">3</td>
-<td align="right">-21</td>
-<td align="right">2</td>
-<td align="right">24</td>
-</tr>
-<tr>
-<td align="left">carlitos</td>
-<td align="left">A</td>
-<td align="right">3</td>
-<td align="right">-21</td>
-<td align="right">4</td>
-<td align="right">21</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th align="right">total_accel_arm</th>
-<th align="right">accel_arm_x</th>
-<th align="right">accel_arm_y</th>
-<th align="right">accel_arm_z</th>
-<th align="right">total_accel_dumbbell</th>
-<th align="right">accel_dumbbell_x</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="right">34</td>
-<td align="right">-288</td>
-<td align="right">109</td>
-<td align="right">-123</td>
-<td align="right">37</td>
-<td align="right">-234</td>
-</tr>
-<tr>
-<td align="right">34</td>
-<td align="right">-290</td>
-<td align="right">110</td>
-<td align="right">-125</td>
-<td align="right">37</td>
-<td align="right">-233</td>
-</tr>
-<tr>
-<td align="right">34</td>
-<td align="right">-289</td>
-<td align="right">110</td>
-<td align="right">-126</td>
-<td align="right">37</td>
-<td align="right">-232</td>
-</tr>
-<tr>
-<td align="right">34</td>
-<td align="right">-289</td>
-<td align="right">111</td>
-<td align="right">-123</td>
-<td align="right">37</td>
-<td align="right">-232</td>
-</tr>
-<tr>
-<td align="right">34</td>
-<td align="right">-289</td>
-<td align="right">111</td>
-<td align="right">-123</td>
-<td align="right">37</td>
-<td align="right">-233</td>
-</tr>
-<tr>
-<td align="right">34</td>
-<td align="right">-289</td>
-<td align="right">111</td>
-<td align="right">-122</td>
-<td align="right">37</td>
-<td align="right">-234</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th align="right">accel_dumbbell_y</th>
-<th align="right">accel_dumbbell_z</th>
-<th align="right">total_accel_forearm</th>
-<th align="right">accel_forearm_x</th>
-<th align="right">accel_forearm_y</th>
-<th align="right">accel_forearm_z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="right">47</td>
-<td align="right">-271</td>
-<td align="right">36</td>
-<td align="right">192</td>
-<td align="right">203</td>
-<td align="right">-215</td>
-</tr>
-<tr>
-<td align="right">47</td>
-<td align="right">-269</td>
-<td align="right">36</td>
-<td align="right">192</td>
-<td align="right">203</td>
-<td align="right">-216</td>
-</tr>
-<tr>
-<td align="right">46</td>
-<td align="right">-270</td>
-<td align="right">36</td>
-<td align="right">196</td>
-<td align="right">204</td>
-<td align="right">-213</td>
-</tr>
-<tr>
-<td align="right">48</td>
-<td align="right">-269</td>
-<td align="right">36</td>
-<td align="right">189</td>
-<td align="right">206</td>
-<td align="right">-214</td>
-</tr>
-<tr>
-<td align="right">48</td>
-<td align="right">-270</td>
-<td align="right">36</td>
-<td align="right">189</td>
-<td align="right">206</td>
-<td align="right">-214</td>
-</tr>
-<tr>
-<td align="right">48</td>
-<td align="right">-269</td>
-<td align="right">36</td>
-<td align="right">193</td>
-<td align="right">203</td>
-<td align="right">-215</td>
-</tr>
-</tbody>
-</table>
-<p><img title alt width="672"></p>
-<p>The data was partitioned into training(30%) and testing (70%).This ratio was used as the process took too long to complete. Normaally this would be 60% 0 % ratio. The train method in the caret package. We predict using random forest (rf).</p>
-<p>The seed was set to 32343 to make the result reproducible. <img title alt width="672"></p>
+<p>The data was partitioned into training(30%) and testing (70%).This ratio was used as the process took too long to complete. Normarlly this would be 60% 0 % ratio. The train method in the caret package. We predict using random forest (rf).</p>
+<p>The seed was set to 32343 to make the result reproducible. The model was then cross validated using</p>
 </div>
 
 <div id="model">
@@ -305,48 +107,27 @@ Summary Data
 <div id="results">
 <h3>
 <a id="results" class="anchor" href="#results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Results</h3>
-<pre><code>## Random Forest 
-## 
-## 3927 samples
-##   17 predictor
-##    5 classes: 'A', 'B', 'C', 'D', 'E' 
-## 
-## No pre-processing
-## Resampling: Bootstrapped (25 reps) 
-## 
-## Summary of sample sizes: 3927, 3927, 3927, 3927, 3927, 3927, ... 
-## 
-## Resampling results across tuning parameters:
-## 
-##   mtry  Accuracy   Kappa      Accuracy SD  Kappa SD  
-##    2    0.8537269  0.8145621  0.008965455  0.01115717
-##   11    0.8529648  0.8137497  0.009190705  0.01162139
-##   21    0.8332411  0.7887292  0.012105272  0.01532812
-## 
-## Accuracy was used to select the optimal model using  the largest value.
-## The final value used for the model was mtry = 2.</code></pre>
-</div>
-
-<div id="final-model">
-<h3>
-<a id="final-model" class="anchor" href="#final-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final Model</h3>
 <pre><code>## 
 ## Call:
-##  randomForest(x = x, y = y, mtry = param$mtry, allowParallel = TRUE) 
+##  randomForest(formula = as.factor(class) ~ ., data = training,      ntree = 500) 
 ##                Type of random forest: classification
 ##                      Number of trees: 500
-## No. of variables tried at each split: 2
+## No. of variables tried at each split: 7
 ## 
-##         OOB estimate of  error rate: 12.27%
+##         OOB estimate of  error rate: 0.71%
 ## Confusion matrix:
-##      A   B   C   D   E class.error
-## A 1029   9  35  41   2  0.07795699
-## B   67 600  66  12  15  0.21052632
-## C   36  32 609   6   2  0.11094891
-## D   30   1  44 560   9  0.13043478
-## E    7  25  19  24 647  0.10387812</code></pre>
+##      A    B    C    D    E class.error
+## A 3343    4    0    0    1 0.001493429
+## B   16 2258    4    1    0 0.009214568
+## C    0   17 2033    4    0 0.010223953
+## D    0    0   28 1900    2 0.015544041
+## E    0    0    3    4 2158 0.003233256</code></pre>
 </div>
 
+<div id="predict-test">
+<h2>
+<a id="predict-test" class="anchor" href="#predict-test" aria-hidden="true"><span class="octicon octicon-link"></span></a>Predict test</h2>
+<pre><code>rfpre2&lt;- predict(rfFit2,testing)</code></pre>
 <div id="confusion-matrix">
 <h3>
 <a id="confusion-matrix" class="anchor" href="#confusion-matrix" aria-hidden="true"><span class="octicon octicon-link"></span></a>Confusion Matrix</h3>
@@ -354,33 +135,45 @@ Summary Data
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 3701  217   73   87   22
-##          B   16 2197   60   10   50
-##          C   67  168 2230  123   66
-##          D  120   31   30 2016   39
-##          E    2   44    2   15 2347
+##          A 2232   12    0    0    0
+##          B    0 1503   14    0    0
+##          C    0    3 1353   13    2
+##          D    0    0    1 1271    3
+##          E    0    0    0    2 1437
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.9096          
-##                  95% CI : (0.9046, 0.9143)
-##     No Information Rate : 0.2844          
+##                Accuracy : 0.9936          
+##                  95% CI : (0.9916, 0.9953)
+##     No Information Rate : 0.2845          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.8855          
-##  Mcnemar's Test P-Value : &lt; 2.2e-16       
+##                   Kappa : 0.9919          
+##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9475   0.8269   0.9311   0.8956   0.9299
-## Specificity            0.9594   0.9877   0.9626   0.9808   0.9944
-## Pos Pred Value         0.9027   0.9417   0.8402   0.9016   0.9739
-## Neg Pred Value         0.9787   0.9596   0.9851   0.9796   0.9844
-## Prevalence             0.2844   0.1935   0.1744   0.1639   0.1838
-## Detection Rate         0.2695   0.1600   0.1624   0.1468   0.1709
-## Detection Prevalence   0.2986   0.1699   0.1933   0.1628   0.1755
-## Balanced Accuracy      0.9535   0.9073   0.9469   0.9382   0.9621</code></pre>
+## Sensitivity            1.0000   0.9901   0.9890   0.9883   0.9965
+## Specificity            0.9979   0.9978   0.9972   0.9994   0.9997
+## Pos Pred Value         0.9947   0.9908   0.9869   0.9969   0.9986
+## Neg Pred Value         1.0000   0.9976   0.9977   0.9977   0.9992
+## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
+## Detection Rate         0.2845   0.1916   0.1724   0.1620   0.1832
+## Detection Prevalence   0.2860   0.1933   0.1747   0.1625   0.1834
+## Balanced Accuracy      0.9989   0.9940   0.9931   0.9939   0.9981</code></pre>
+</div>
+
+<p></p>
+</div>
+
+<div id="predicting-results-for-the-test-data-set">
+<h2>
+<a id="predicting-results-for-the-test-data-set" class="anchor" href="#predicting-results-for-the-test-data-set" aria-hidden="true"><span class="octicon octicon-link"></span></a>Predicting results for the test data set</h2>
+<pre><code>print(rfpre2&lt;- predict(rfFit2,testing2))</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
+## Levels: A B C D E</code></pre>
 </div>
 
 <p></p>
@@ -389,8 +182,8 @@ Summary Data
 <div id="conclusion">
 <h1>
 <a id="conclusion" class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h1>
-<p>The final model gives a 90.9% Accuracy with a confidence interval of 90% - 91%. The Accuracy lies between this interval. The model predicts that the exercise is being done well (class = A) with a sensitivity of 94.7% and specificity of 95.9%. Again for class A prediction both the positive and negetive prediction are high. The model sensitivity and specificity for the other class are relatively smaller. The error rate for A is 0.07795699.</p>
-<p>Further analysis can be carried out with different multiple classification model and compared to see if a better model can be found.</p>
+<p>The final model gives a 99.3% Accuracy with a confidence interval of 99.1% - 99.5%. The Accuracy lies between this interval. The model predicts that the exercise is being done well (class = A) with a sensitivity of 99.9% and specificity of 99.8.9%. Again for class A prediction both the positive and negetive prediction are high. The model sensitivity and specificity for the other class are are equally very good.</p>
+<p>Further more we see the error rates are very low with the exception of class D which is low but slightly higher than all the other error rates.</p>
 </div>
 
 <p></p>
