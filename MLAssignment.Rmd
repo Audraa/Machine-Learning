@@ -15,52 +15,50 @@ Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible t
 
 #Data Analysis
 
-There are several variables including some derived variables in the dataset. We are interested in the accelerometer variables. These were easily idetified by  the string "accel_" present in the variable name. Some of the accelerometer variables had mostly null values, these were identified as those with "var_" in the variable name. These were removed. The remaining two variable required for the model were the user_name and classe. These were constructed into a dataframe and this new data frame is what was used for creating a model. The new dataset contained 18 new variables.. The classse name was changed to class. The same treatment was given the test data set of 20 observations
+There are several variables including some derived variables in the dataset. The columns that had a lot of null values were removed from the dataset. The same column was then applied to the test data set. 
+
+The training data was split into training and test with a ratio of 60% for training and 40% for testing and cross validation.
+
+Results were then reviewed and analysed. Predictions was then made using the original test dataset with 20 observations.
 
 
 
 ```{r library , echo=FALSE, message=FALSE }
-require(caret)
-require(ggplot2)
 
+require(ggplot2)
+library(randomForest)
 require(plyr)
 require(stringr)
 require(knitr)
-require(Hmisc)
-library(caret)
-library(rattle)
+require(caret)
 
 ```
 
 
-```{r load data, cache=TRUE ,echo=FALSE,message=FALSE}
+```{r load data ,echo=FALSE,message=FALSE}
 
 #The training data for this project are available here: 
 
 trainingURL<-"http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
 testURL<-"http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
-train<-read.csv(trainingURL,na.strings=c("NA",""))
-test<-read.csv(testURL,na.strings=c("NA",""))
+train<-read.csv(trainingURL, na.strings=c("", "NA", "NULL"))
+test<-read.csv(testURL, na.strings=c("", "NA", "NULL"))
 
 
 #Clean data
-#clean_train<-apply(!is.na(training),2,sum)==19622
+training2<-train[,apply(!is.na(train),2,sum)>19621]
+training2<-training2[-(1:7)]
+
+#names(train[,apply(!is.na(train),2,sum)>19621])[1:59]
+
+testing2<-test[names(train[,apply(!is.na(train),2,sum)>19621])[1:59]]
+testing2<-testing2[-(1:7)]
 
 
-training2<-data.frame(train$user_name,train$classe,train[,grep("accel_",names(train))])
-
-#Remove all var variables as it is a derived column with mostly NA's
-training2<-training2[,-(grep("var_",names(training2)))]
-
-
-#The classe does not exist in the test data set.Do the same filtering for the  test data
-testing2<-data.frame(test$user_name,test[,grep("accel_",names(test))])
-testing2<-testing2[,-(grep("var_",names(testing2)))]
-
-names(training2)[1] <-"user_name"
-names(testing2)[1] <-"user_name"
-names(training2)[2] <-"class"
+names(training2)[53] <-"class"
 training2$class <-factor(training2$class)
+
+
 
 ```
 
@@ -69,53 +67,34 @@ In the analysis the variables were ploted against thier indexes and we can see t
 Given a set of data the model will be able to predict how well a person is doing a give exercise. 
 
 
-```{r plots, echo=FALSE,message=FALSE}
-#knitr::kable(head(training2), booktabs = TRUE ,caption = "Summary Data")
-knitr::kable(head(training2[1:6]), booktabs = TRUE ,caption = "Summary Data")
-knitr::kable(head(training2[7:12]), booktabs = TRUE )
-knitr::kable(head(training2[13:18]), booktabs = TRUE )
-###
+The data was partitioned into training(30%) and testing (70%).This ratio was used as the process took too long to complete. Normarlly this would be 60% \40 % ratio. The train method in the caret package. We predict using random forest (rf).
 
-par(mfrow=c(2,2))
-plot(training2$accel_belt_x,col=training2$class,main="accel_belt_x")
-
-plot(training2$accel_arm_x,col=training2$class,main="accel_arm_x")
-plot(training2$accel_forearm_x,col=training2$class ,main="accel_forearm_x")
-plot(training2$total_accel_forearm,col=training2$class,main="Totalaccel_forearm_x")
-
-
-```
-
-The data was partitioned into training(30%) and testing (70%).This ratio was used as the process took too long to complete. Normaally this would be 60% \40 % ratio. The train method in the caret package. We predict using random forest (rf).
-
-The seed was set to 32343 to make the result reproducible.
+The seed was set to 32343 to make the result reproducible. The model was then cross validated using 
 ```{r summary, echo=FALSE,message=FALSE}
 training <-training2
 
-inTrain <- createDataPartition(training$class,p=.3, list=FALSE)
+inTrain <- createDataPartition(training2$class,p=.6, list=FALSE)
 training <- training2[inTrain,]
 testing <- training2[-inTrain,]
 
-qplot(factor(user_name), data=training,colour=class, main="Repitions of users by their class")
-?qplot
 ```
 
 #Model
 
-```{r model, echo=FALSE,message=FALSE, cache=TRUE}
+```{r model, echo=FALSE,message=FALSE}
 
 
 set.seed(32343)
 
-rfFit2<- train(class~., method="rf",data=training,allowParallel=TRUE)
+#rfFit2<- train(class~., method="rf",data=training,allowParallel=TRUE)
 
-
+rfFit2<-randomForest(as.factor(class)~.,data=training,ntree = 500)
 ```
 
 ###Results
 
 ```{r results, echo=FALSE,message=FALSE, cache=TRUE}
-rfFit2
+print(rfFit2)
 
 ```
 
@@ -124,7 +103,7 @@ rfFit2
 ```{r finalmodel, echo=FALSE,message=FALSE, cache=TRUE}
 
 
-print(rfFit2$finalModel)
+
 
 #￼getTree( rfFit2$finalModel,k=2)
 rfpre2<- predict(rfFit2,testing)
@@ -135,16 +114,21 @@ rfpre2<- predict(rfFit2,testing)
 ```{r confusionmatrix, echo=FALSE,message=FALSE, cache=TRUE}
 confusionMatrix(rfpre2,testing$class)
 
+rfpre2<- predict(rfFit2,testing2)
+```
+
+##Predicting results for the test data set
+```{r test}
+print(rfpre2<- predict(rfFit2,testing2))
+
 
 ```
 
-
-
 #Conclusion
 
-The final model gives a 90.9% Accuracy with a confidence interval of 90% - 91%. The Accuracy lies between this interval. The model predicts that the exercise is being done well (class = A) with a sensitivity of 94.7% and specificity of 95.9%. Again for class A prediction both the positive and negetive prediction are high. The model sensitivity and specificity for the other class are relatively smaller. The error rate for A is 0.07795699.
+The final model gives a 99.3% Accuracy with a confidence interval of 99.1% - 99.5%. The Accuracy lies between this interval. The model predicts that the exercise is being done well (class = A) with a sensitivity of 99.9% and specificity of 99.8.9%. Again for class A prediction both the positive and negetive prediction are high. The model sensitivity and specificity for the other class are are equally very good. 
 
-Further analysis can be carried out with different multiple classification model and compared to see if a better model can be found. 
+Further more we see the error rates are very low with the exception of class D which is low but slightly higher than all the other error rates.
 
 
 
