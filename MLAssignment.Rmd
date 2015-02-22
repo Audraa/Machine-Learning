@@ -98,15 +98,12 @@ print(rfFit2)
 
 ```
 
-###Final Model
+##Predict test
 
-```{r finalmodel, echo=FALSE,message=FALSE, cache=TRUE}
+```{r finalmodel,message=FALSE, cache=TRUE}
 
-
-
-
-#￼getTree( rfFit2$finalModel,k=2)
 rfpre2<- predict(rfFit2,testing)
+
 ```
 
 ###Confusion Matrix

@@ -93,9 +93,9 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 ## D    0    0   28 1900    2 0.015544041
 ## E    0    0    3    4 2158 0.003233256</code></pre>
 </div>
-<div id="final-model" class="section level3">
-<h3>Final Model</h3>
-</div>
+<div id="predict-test" class="section level2">
+<h2>Predict test</h2>
+<pre class="r"><code>rfpre2&lt;- predict(rfFit2,testing)</code></pre>
 <div id="confusion-matrix" class="section level3">
 <h3>Confusion Matrix</h3>
 <pre><code>## Confusion Matrix and Statistics
@@ -129,6 +129,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 ## Detection Rate         0.2845   0.1916   0.1724   0.1620   0.1832
 ## Detection Prevalence   0.2860   0.1933   0.1747   0.1625   0.1834
 ## Balanced Accuracy      0.9989   0.9940   0.9931   0.9939   0.9981</code></pre>
+</div>
 </div>
 <div id="predicting-results-for-the-test-data-set" class="section level2">
 <h2>Predicting results for the test data set</h2>
