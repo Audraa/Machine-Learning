@@ -139,20 +139,6 @@ confusionMatrix(rfpre2,testing$class)
 ```
 
 
-#Test Dataset Prediction
-
-
-```{r predictTest, echo=FALSE,message=FALSE, cache=TRUE}
-
-rfpretest<- predict(rfFit2,testing2)
-t<-data.frame(rfpretest,testing2)
-
- knitr::kable(head(t[1:10]), booktabs = TRUE ,caption = "Test Data Summary")
-knitr::kable(head(t[11:18]), booktabs = TRUE )
-rfpretest
-
-
-```
 
 #Conclusion
 
